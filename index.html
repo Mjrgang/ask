@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask Mautiah</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f0f1a;
+      color: #fff;
+      overflow: hidden;
+    }
+    header {
+      background: #6200ea;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      position: relative;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 36px;
+      font-family: 'Brush Script MT', cursive;
+      text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.5);
+    }
+    .slogan {
+      font-size: 18px;
+      color: #ffe600;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.2);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .dialogue-box {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      padding: 15px 20px;
+      background: #5cb85c;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #4cae4c;
+    }
+    .answer {
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+      font-size: 20px;
+      min-height: 50px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px 0;
+      background: #6200ea;
+      color: white;
+      position: relative;
+      z-index: 10;
+    }
+    #aboutUs {
+      position: fixed;
+      bottom: -300px;
+      left: 0;
+      width: 100%;
+      background: #333;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      transition: bottom 0.5s;
+      z-index: 10;
+    }
+    .show {
+      bottom: 0 !important;
+    }
+    #speakButton {
+      display: none;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #ff9800;
+    }
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .bg-animation div {
+      position: absolute;
+      color: rgba(255,255,255,0.08);
+      font-size: 24px;
+      animation: float 10s linear infinite;
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+      }
+    }
+    #voiceToggle {
+      margin-top: 15px;
+      background: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation" id="bgAnimation"></div>
+
+  <header>
+    <h1>Ask Mautiah</h1>
+    <div>
+      <span class="slogan">"The genius that knows it all!"</span>
+      <button onclick="toggleAboutUs()">About Us</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="dialogue-box">
+      <input type="text" id="userQuestion" placeholder="Type your question here..." />
+      <button onclick="getAnswer()">Ask</button>
+      <button onclick="startVoiceInput()">🎤</button>
+    </div>
+    <div class="answer" id="answerBox"></div>
+    <button id="speakButton" onclick="speakText(currentAnswer)">🔊 Read Answer</button>
+    <button id="voiceToggle" onclick="toggleVoice()">🔁 Toggle Voice: <span id="voiceStatus">ON</span></button>
+  </div>
+
+  <div id="aboutUs">
+    <p>Developed By Engineer Mautiah Mongo George</p>
+    <p>Email: mautiahg@gmail.com</p>
+    <p>Instagram: @mautiahjrgang</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Ask Mautiah. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    let currentAnswer = '';
+    let voiceEnabled = true;
+
+    function toggleAboutUs() {
+      document.getElementById('aboutUs').classList.toggle('show');
+    }
+
+    function toggleVoice() {
+      voiceEnabled = !voiceEnabled;
+      document.getElementById('voiceStatus').innerText = voiceEnabled ? 'ON' : 'OFF';
+    }
+
+    function speakText(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      synth.speak(utter);
+    }
+
+    async function getAnswer() {
+      const userInput = document.getElementById('userQuestion').value.trim();
+      const userQuestion = userInput.toLowerCase();
+      const answerBox = document.getElementById('answerBox');
+      const speakButton = document.getElementById('speakButton');
+
+      if (!userQuestion) {
+        answerBox.innerHTML = 'Please enter a question.';
+        speakButton.style.display = 'none';
+        return;
+      }
+
+      const keywords = ["who made", "who created", "who built", "who developed", "which api", "what api", "whose api"];
+      const matched = keywords.some(kw => userQuestion.includes(kw));
+
+      if (matched) {
+        const customAnswer = "Mautiah the Great";
+        answerBox.innerHTML = customAnswer;
+        currentAnswer = customAnswer;
+        speakButton.style.display = 'inline-block';
+        if (voiceEnabled) speakText(customAnswer);
+        return;
+      }
+
+      answerBox.innerHTML = 'Mautiah Is Thinking...';
+      speakButton.style.display = 'none';
+
+      try {
+        const response = await fetch("https://api.cohere.ai/v1/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer TCG1LTLzwFwNAnfVBkr6buhnds7IAIr3Zfeulr0Y"
+          },
+          body: JSON.stringify({
+            model: "command",
+            prompt: userQuestion,
+            max_tokens: 4096,
+          }),
+        });
+
+        const data = await response.json();
+        const text = data.generations[0]?.text.trim() || "Couldn't find an answer. Try rephrasing your question.";
+        answerBox.innerHTML = text;
+        currentAnswer = text;
+        speakButton.style.display = 'inline-block';
+
+        if (voiceEnabled) speakText(text);
+      } catch (error) {
+        answerBox.innerHTML = 'An error occurred. Please try again!';
+        speakButton.style.display = 'none';
+      }
+    }
+
+    function startVoiceInput() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('userQuestion').value = transcript;
+        getAnswer();
+      };
+      recognition.onerror = function() {
+        alert('Voice input failed. Try again.');
+      };
+    }
+
+    function generateFlyingNumbers() {
+      const bg = document.getElementById('bgAnimation');
+      for (let i = 0; i < 100; i++) {
+        const el = document.createElement('div');
+        el.innerText = i % 2 === 0 ? '∞' : Math.floor(Math.random() * 999);
+        el.style.left = `${Math.random() * 100}%`;
+        el.style.top = `${Math.random() * 100 + 100}px`;
+        el.style.fontSize = `${Math.random() * 20 + 10}px`;
+        el.style.animationDuration = `${Math.random() * 10 + 5}s`;
+        bg.appendChild(el);
+      }
+    }
+
+    generateFlyingNumbers();
+  </script>
+</body>
+</html>
